@@ -1,0 +1,90 @@
+/* Barre de navigation, zone d'aperçu des feuilles, page d'accueil. Les réglages (panneau) sont dans panel.css. */
+.topbar {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  padding: 0.6rem 1rem;
+  background: var(--card);
+  border-bottom: 1px solid var(--line);
+  flex: none;
+}
+.topbar strong {
+  margin-right: auto;
+}
+.topbar a {
+  text-decoration: none;
+  padding: 0.2rem 0.5rem;
+  border-radius: 6px;
+}
+.topbar a[aria-current='page'] {
+  background: var(--accent);
+  color: #fff;
+}
+
+.preview {
+  padding: 1rem;
+  overflow: auto;
+  min-width: 0;
+}
+.sheet {
+  width: var(--pw, 210mm);
+  height: var(--ph, 297mm);
+  margin: 0 auto 1rem;
+  padding: 10mm;
+  background: #fff;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  zoom: var(--zoom, 1);
+  overflow: hidden;
+}
+.sheet.flow {
+  height: auto;
+  min-height: var(--ph, 297mm);
+  overflow: visible;
+}
+.sh-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 10mm;
+  height: 14mm;
+  font:
+    11pt 'Andika',
+    sans-serif;
+  align-items: flex-start;
+}
+.sh-head .blank {
+  display: inline-block;
+  border-bottom: 0.3mm solid #555;
+  width: 60mm;
+  margin-left: 2mm;
+}
+.sh-head .title {
+  font-weight: bold;
+}
+.row-svg {
+  display: block;
+  width: calc(var(--pw, 210mm) - 20mm);
+  overflow: visible;
+}
+
+.home {
+  max-width: 760px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+  overflow: auto;
+}
+.tool-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1rem;
+}
+.tool-card {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 1.2rem;
+  text-decoration: none;
+  color: inherit;
+}
+.tool-card:hover {
+  border-color: var(--accent);
+}

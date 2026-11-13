@@ -1,0 +1,380 @@
+/* Panneau de réglages commun à tous les outils (cartes repliables, champs, boutons segmentés, actions). */
+:root {
+  --ink: #1f2937;
+  --muted: #6b7280;
+  --line: #d5d9e0;
+  --accent: #1e40af;
+  --accent-soft: #e5ebfa;
+  --card: #ffffff;
+  --radius: 10px;
+}
+* {
+  box-sizing: border-box;
+}
+html,
+body {
+  height: 100%;
+  margin: 0;
+}
+body {
+  font:
+    15px/1.4 'Inter',
+    system-ui,
+    -apple-system,
+    'Segoe UI',
+    sans-serif;
+  color: var(--ink);
+  background: #e9ecf0;
+  display: flex;
+  flex-direction: column;
+}
+a {
+  color: var(--accent);
+}
+[hidden] {
+  display: none !important;
+}
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* ---------- mise en page ---------- */
+.app {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: 370px 1fr;
+}
+.panel {
+  overflow-y: auto;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: #f6f7f9;
+  border-right: 1px solid var(--line);
+}
+
+/* ---------- cartes de réglages ---------- */
+.card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 11px 14px 13px;
+  box-shadow: 0 1px 2px rgba(17, 24, 39, 0.05);
+}
+.card h2 {
+  margin: 0;
+  font:
+    600 0.8rem 'Inter',
+    system-ui,
+    sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+}
+.card > summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  list-style: none;
+  user-select: none;
+  border-radius: 6px;
+}
+.card > summary::-webkit-details-marker {
+  display: none;
+}
+.card > summary::after {
+  content: '';
+  width: 7px;
+  height: 7px;
+  border-right: 2px solid var(--muted);
+  border-bottom: 2px solid var(--muted);
+  transform: rotate(45deg) translateY(-2px);
+  transition: transform 0.15s;
+  flex: none;
+  margin-right: 4px;
+}
+.card[open] > summary {
+  margin-bottom: 6px;
+}
+.card[open] > summary::after {
+  transform: rotate(-135deg) translateY(-2px);
+}
+.card > summary:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+.hint {
+  margin: 8px 0 0;
+  font-size: 0.84rem;
+  line-height: 1.4;
+  color: var(--muted);
+}
+
+/* ---------- champs ---------- */
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 10px 0 0;
+  font-weight: 500;
+  font-size: 0.88rem;
+}
+.field > span.label,
+.field > .label {
+  font-weight: 500;
+}
+.pair {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+select,
+input[type='text'],
+input[type='number'],
+textarea {
+  font: inherit;
+  font-weight: 400;
+  padding: 7px 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+  color: var(--ink);
+  width: 100%;
+}
+textarea {
+  min-height: 5.5rem;
+  resize: vertical;
+}
+select:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+input[type='range'] {
+  width: 100%;
+  accent-color: var(--accent);
+  height: 24px;
+}
+.check {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 8px 0 0;
+  font-weight: 400;
+  cursor: pointer;
+}
+.check input {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--accent);
+  flex: none;
+}
+.checks {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 10px;
+}
+
+/* ---------- boutons ---------- */
+button {
+  font: inherit;
+  cursor: pointer;
+}
+.seg {
+  display: grid;
+  gap: 6px;
+}
+.seg-2 {
+  grid-template-columns: 1fr 1fr;
+}
+.seg-3 {
+  grid-template-columns: repeat(3, 1fr);
+}
+.seg-4 {
+  grid-template-columns: repeat(4, 1fr);
+}
+.seg button {
+  padding: 7px 6px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+  font-weight: 500;
+  font-size: 0.88rem;
+  color: var(--ink);
+  transition:
+    background 0.1s,
+    border-color 0.1s;
+}
+.seg button:hover {
+  border-color: #9ca3af;
+}
+.seg button.active {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.mini {
+  padding: 4px 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+  font-size: 0.84rem;
+  color: var(--ink);
+}
+.mini:hover {
+  border-color: #9ca3af;
+}
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 6px 0 0;
+}
+
+.action {
+  width: 100%;
+  padding: 9px 12px;
+  margin-top: 8px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+  color: var(--ink);
+  font-weight: 500;
+}
+.action:hover {
+  border-color: #9ca3af;
+}
+.action.primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+  font-size: 1rem;
+  margin-top: 0;
+}
+.action.primary:hover {
+  background: #1b3a9c;
+}
+.action.ghost {
+  background: transparent;
+  color: var(--muted);
+}
+.actions {
+  position: sticky;
+  bottom: -14px;
+  margin-top: auto;
+  box-shadow:
+    0 -8px 12px -6px #f6f7f9,
+    0 1px 2px rgba(17, 24, 39, 0.05);
+}
+.actions .row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.actions .row .action {
+  margin-top: 8px;
+}
+.actions .row:first-child .action {
+  margin-top: 0;
+}
+
+/* ---------- sélecteur de couleur ---------- */
+.color-field {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 8px 0 0;
+}
+.color-field > .name {
+  flex: 1;
+  font-size: 0.88rem;
+  font-weight: 500;
+}
+.color-field .dot-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 3px 10px 3px 3px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: #fff;
+  font-size: 0.8rem;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+.color-field .dot-btn:hover {
+  border-color: #9ca3af;
+}
+.dot {
+  display: inline-block;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 1px solid rgba(0, 0, 0, 0.25);
+  flex: none;
+}
+.color-pop {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 6px);
+  z-index: 10;
+  width: 214px;
+  padding: 10px;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: 0 8px 24px rgba(17, 24, 39, 0.18);
+}
+.color-pop .grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 8px;
+}
+.color-pop .dot {
+  width: 100%;
+  aspect-ratio: 1;
+  height: auto;
+  padding: 0;
+  cursor: pointer;
+}
+.color-pop .dot:hover,
+.color-pop .dot.active {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+.color-pop .custom {
+  width: 100%;
+  margin-top: 10px;
+}
+
+/* ---------- petits écrans ---------- */
+@media screen and (max-width: 860px) {
+  .app {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto;
+  }
+  body {
+    overflow: auto;
+    height: auto;
+  }
+  html {
+    height: auto;
+  }
+  .panel {
+    overflow: visible;
+  }
+  .actions {
+    position: static;
+  }
+}

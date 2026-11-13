@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Feuilles d'écriture</title>
+  </head>
+  <body>
+    <nav class="topbar" id="topbar"></nav>
+    <div class="app">
+      <aside class="panel" aria-label="Réglages">
+        <details class="card" open>
+          <summary><h2>Contenu</h2></summary>
+          <label class="field" for="text"
+            >Texte (lettres, chiffres, mots, prénom, phrases)
+            <textarea id="text">ABCDEF</textarea>
+          </label>
+          <div class="field">
+            <label for="mode">Un exercice par…</label>
+            <select id="mode" data-seg>
+              <option value="chars">caractère</option>
+              <option value="words">mot</option>
+            </select>
+          </div>
+        </details>
+
+        <details class="card" open>
+          <summary><h2>Écriture</h2></summary>
+          <label class="field" for="style"
+            >Style
+            <select id="style">
+              <option value="script">Script</option>
+              <option value="cursive">Cursive scolaire (Trad)</option>
+              <option value="moderne">Cursive moderne</option>
+              <option value="trace">Tracé fléché (lettres script et chiffres)</option>
+            </select>
+          </label>
+          <label class="check"
+            ><input type="checkbox" id="arrows" checked /> Flèches et point de départ (tracé)</label
+          >
+          <div class="field">
+            <label for="ruling">Réglure</label>
+            <select id="ruling" data-seg>
+              <option value="seyes">Seyès</option>
+              <option value="lines4">4 lignes</option>
+              <option value="baseline">Ligne de base</option>
+              <option value="none">Aucune</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="i">Interligne (mm)</label>
+            <select id="i" data-seg>
+              <option>2</option>
+              <option selected>2.5</option>
+              <option>3</option>
+            </select>
+          </div>
+          <label class="field" for="gap"
+            >Espacement
+            <input type="number" id="gap" value="2" min="0.5" max="8" step="0.5" />
+          </label>
+        </details>
+
+        <details class="card" open>
+          <summary><h2>Lignes</h2></summary>
+          <div class="pair">
+            <label class="field" for="rowsPerItem"
+              >Lignes / exercice
+              <input type="number" id="rowsPerItem" value="2" min="1" max="10" />
+            </label>
+            <label class="field" for="dotRows"
+              >dont pointillés
+              <input type="number" id="dotRows" value="1" min="0" max="10" />
+            </label>
+          </div>
+          <div class="field">
+            <label for="dotStyle">Pointillés</label>
+            <select id="dotStyle" data-seg>
+              <option value="outline">Contour pointillé</option>
+              <option value="gray">Gris clair</option>
+            </select>
+          </div>
+          <label class="check"
+            ><input type="checkbox" id="modelEach" /> Modèle au début des lignes vides</label
+          >
+          <label class="check"
+            ><input type="checkbox" id="gray" /> Réglure grise (économie d'encre)</label
+          >
+        </details>
+
+        <details class="card" open>
+          <summary><h2>En-tête</h2></summary>
+          <label class="field" for="title"
+            >Titre (vide : aucun)
+            <input type="text" id="title" />
+          </label>
+          <label class="check"
+            ><input type="checkbox" id="showName" checked /> Ligne « Prénom / Date »</label
+          >
+        </details>
+
+        <section class="card actions">
+          <div class="field">
+            <label for="page">Format de la page</label>
+            <select id="page" data-seg>
+              <option value="A4P">A4 portrait</option>
+              <option value="A4L">A4 paysage</option>
+              <option value="A3P">A3 portrait</option>
+              <option value="A3L">A3 paysage</option>
+            </select>
+          </div>
+          <div class="row">
+            <button class="action primary" id="print" type="button">Imprimer / PDF</button>
+            <button class="action ghost" id="share" type="button">Copier le lien</button>
+          </div>
+        </section>
+      </aside>
+      <main class="preview"><div id="sheets"></div></main>
+    </div>
+    <script type="module" src="/tools/ecriture/main.js"></script>
+  </body>
+</html>

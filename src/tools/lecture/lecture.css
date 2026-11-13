@@ -1,0 +1,36 @@
+/* Texte coloré de la page Lecture. */
+.reading {
+  font-size: var(--fs, 22pt);
+  line-height: var(--lh, 1.9);
+  letter-spacing: var(--ls, 0);
+  font-family: var(--ff, 'Andika');
+  white-space: pre-wrap;
+}
+.reading .t-v {
+  color: var(--c-v);
+}
+.reading .t-c {
+  color: var(--c-c);
+}
+.reading .t-xv {
+  color: var(--c-xv);
+}
+.reading .t-xc {
+  color: var(--c-xc);
+}
+.reading .t-m {
+  color: var(--c-m);
+}
+.reading.hints .t-xv,
+.reading.hints .t-xc {
+  text-decoration: underline;
+  text-underline-offset: 0.12em;
+  text-decoration-thickness: 0.06em;
+}
+.reading.hints .t-m {
+  font-style: italic;
+  opacity: 0.75;
+}
+.reading.hints .t-v {
+  font-weight: 700;
+}

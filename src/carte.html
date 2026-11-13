@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Carte du monde – crée, colorie, imprime</title>
+    <meta
+      name="description"
+      content="Crée, personnalise et imprime ta carte du monde : coloriage, projections, globe."
+    />
+    <style id="page-style"></style>
+  </head>
+  <body>
+    <nav class="topbar" id="topbar"></nav>
+    <div class="app">
+      <aside class="panel" id="panel" aria-label="Réglages">
+        <details class="card" open>
+          <summary><h2>En-tête</h2></summary>
+
+          <label class="field"
+            >Titre (vide : aucun)
+            <input type="text" data-key="title" maxlength="40" placeholder="Aucun" />
+          </label>
+          <label class="check"
+            ><input type="checkbox" data-key="showName" /> Ligne « Prénom / Date »</label
+          >
+        </details>
+
+        <details class="card" open>
+          <summary><h2>Carte</h2></summary>
+          <label class="field"
+            >Projection
+            <select data-key="projection">
+              <option value="naturalEarth">Planisphère (Natural Earth)</option>
+              <option value="equalEarth">Planisphère (Equal Earth)</option>
+              <option value="mercator">Mercator</option>
+              <option value="globe">Globe</option>
+            </select>
+          </label>
+          <label class="field"
+            >Zone
+            <select data-key="region" id="region"></select>
+          </label>
+          <div class="field" id="row-center">
+            Centrer la carte sur
+            <div class="seg seg-2">
+              <button data-key="centerLon" data-type="number" data-value="0">
+                Europe · Afrique
+              </button>
+              <button data-key="centerLon" data-type="number" data-value="-90">Amériques</button>
+              <button data-key="centerLon" data-type="number" data-value="90">Asie</button>
+              <button data-key="centerLon" data-type="number" data-value="160">Pacifique</button>
+            </div>
+            <input
+              type="range"
+              data-key="centerLon"
+              min="-180"
+              max="180"
+              step="5"
+              aria-label="Longitude du centre"
+            />
+          </div>
+        </details>
+
+        <details class="card" open>
+          <summary><h2>Couleurs</h2></summary>
+          <label class="check"><input type="checkbox" data-key="fill" /> Colorier les pays</label>
+          <div class="palettes" id="palettes"></div>
+          <label class="check"><input type="checkbox" data-key="ocean" /> Mer bleue</label>
+          <p class="hint" id="hint-nofill">
+            Pays en blanc avec de gros contours : imprime et colorie au crayon !
+          </p>
+        </details>
+
+        <details class="card" open>
+          <summary><h2>Noms</h2></summary>
+          <label class="check"
+            ><input type="checkbox" data-key="showCountries" /> Noms des pays</label
+          >
+          <label class="check" id="row-dots"
+            ><input type="checkbox" data-key="dots" /> Remplacer les noms par des pointillés</label
+          >
+          <label class="field"
+            >Grandes villes
+            <select data-key="cityLevel" data-type="number">
+              <option value="0">Aucune</option>
+              <option value="1">Capitales (★)</option>
+              <option value="2">Capitales + plus grandes villes</option>
+              <option value="3">Capitales + beaucoup de villes</option>
+              <option value="4">Capitales + toutes les villes</option>
+            </select>
+          </label>
+          <label class="check"><input type="checkbox" data-key="flags" /> Drapeaux des pays</label>
+          <label class="check"
+            ><input type="checkbox" data-key="showOceans" /> Océans et mers</label
+          >
+        </details>
+
+        <details class="card">
+          <summary><h2>Surbrillance</h2></summary>
+          <label class="field"
+            >Mettre un continent en avant
+            <select id="hl-continent"></select>
+          </label>
+          <p class="hint" id="hl-count"></p>
+          <button class="action ghost" id="hl-clear">Effacer la sélection</button>
+        </details>
+
+        <details class="card">
+          <summary><h2>Décors</h2></summary>
+          <label class="check"><input type="checkbox" data-key="graticule" /> Quadrillage</label>
+          <label class="check"
+            ><input type="checkbox" data-key="tropics" /> Équateur et tropiques</label
+          >
+          <label class="check"><input type="checkbox" data-key="compass" /> Rose des vents</label>
+          <label class="check"><input type="checkbox" data-key="scale" /> Échelle</label>
+        </details>
+
+        <details class="card">
+          <summary><h2>Réglages avancés</h2></summary>
+          <label class="field"
+            >Précision des contours
+            <select data-key="precision">
+              <option value="110">Normale</option>
+              <option value="50">Détaillée</option>
+            </select>
+          </label>
+          <label class="field"
+            >Épaisseur des frontières
+            <input type="range" data-key="stroke" min="0.1" max="1.2" step="0.05" />
+          </label>
+          <label class="field" id="row-font"
+            >Police
+            <select data-key="font" id="font"></select>
+          </label>
+          <label class="field" id="row-fontscale"
+            >Taille des noms
+            <input type="range" data-key="fontScale" min="0.5" max="1.6" step="0.1" />
+          </label>
+        </details>
+
+        <section class="card actions">
+          <div class="field">
+            Format de la page
+            <div class="seg seg-2">
+              <button data-key="format" data-value="A4P">A4 portrait</button>
+              <button data-key="format" data-value="A4L">A4 paysage</button>
+              <button data-key="format" data-value="A3P">A3 portrait</button>
+              <button data-key="format" data-value="A3L">A3 paysage</button>
+            </div>
+          </div>
+          <div class="row">
+            <button class="action primary" id="btn-print">Imprimer</button>
+            <button class="action ghost" id="btn-link">Copier le lien</button>
+          </div>
+          <div class="row">
+            <button class="action" id="btn-svg">SVG</button>
+            <button class="action" id="btn-png">PNG</button>
+          </div>
+          <button class="action ghost" id="btn-reset">Tout remettre</button>
+        </section>
+      </aside>
+
+      <main class="stage">
+        <div class="zoom-controls" role="group" aria-label="Zoom">
+          <button id="z-in" title="Zoomer" aria-label="Zoomer">＋</button>
+          <button id="z-out" title="Dézoomer" aria-label="Dézoomer">－</button>
+          <button id="z-center" title="Recentrer" aria-label="Recentrer la carte">Centrer</button>
+        </div>
+        <div id="sheet">
+          <svg id="map" role="img" aria-label="Carte du monde"></svg>
+          <div id="loading" class="loading">Chargement de la carte…</div>
+        </div>
+      </main>
+    </div>
+
+    <div id="tooltip" class="tooltip" hidden></div>
+    <div id="toast" class="toast" hidden></div>
+    <script type="module" src="/tools/carte/main.js"></script>
+  </body>
+</html>

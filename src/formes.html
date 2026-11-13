@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Feuilles de formes</title>
+  </head>
+  <body>
+    <nav class="topbar" id="topbar"></nav>
+    <div class="app">
+      <aside class="panel" aria-label="Réglages">
+        <details class="card" open>
+          <summary><h2>Formes</h2></summary>
+          <div class="chips">
+            <button type="button" class="mini" data-pick="all" data-group="formes">Tout</button>
+            <button type="button" class="mini" data-pick="none" data-group="formes">Aucune</button>
+          </div>
+          <div id="formes" class="checks"></div>
+        </details>
+
+        <details class="card" open>
+          <summary><h2>Traits</h2></summary>
+          <div class="chips">
+            <button type="button" class="mini" data-pick="all" data-group="traits">Tout</button>
+            <button type="button" class="mini" data-pick="none" data-group="traits">Aucun</button>
+          </div>
+          <div id="traits" class="checks"></div>
+        </details>
+
+        <details class="card" open>
+          <summary><h2>Graphisme</h2></summary>
+          <div class="chips">
+            <button type="button" class="mini" data-pick="all" data-group="graphisme">Tout</button>
+            <button type="button" class="mini" data-pick="none" data-group="graphisme">
+              Aucun
+            </button>
+          </div>
+          <div id="graphisme" class="checks"></div>
+        </details>
+
+        <details class="card" open>
+          <summary><h2>Mise en page</h2></summary>
+          <div class="pair">
+            <label class="field" for="size"
+              >Taille (mm)
+              <input type="number" id="size" value="25" min="8" max="60" step="1" />
+            </label>
+            <label class="field" for="gap"
+              >Espacement (mm)
+              <input type="number" id="gap" value="8" min="0" max="30" step="1" />
+            </label>
+          </div>
+          <div class="pair">
+            <label class="field" for="rowsPerShape"
+              >Lignes / forme
+              <input type="number" id="rowsPerShape" value="2" min="1" max="10" />
+            </label>
+            <label class="field" for="dotRows"
+              >dont pointillés
+              <input type="number" id="dotRows" value="1" min="0" max="10" />
+            </label>
+          </div>
+          <div class="field">
+            <label for="dotStyle">Pointillés</label>
+            <select id="dotStyle" data-seg>
+              <option value="outline">Contour pointillé</option>
+              <option value="gray">Gris clair</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="bg">Fond</label>
+            <select id="bg" data-seg>
+              <option value="none">Aucun</option>
+              <option value="grid">Petits carreaux (5 mm)</option>
+            </select>
+          </div>
+          <label class="check"
+            ><input type="checkbox" id="arrows" checked /> Point de départ et sens du tracé</label
+          >
+          <label class="check"
+            ><input type="checkbox" id="modelEach" /> Modèle au début des lignes vides</label
+          >
+          <label class="check"
+            ><input type="checkbox" id="gray" /> Fond gris (économie d'encre)</label
+          >
+        </details>
+
+        <details class="card" open>
+          <summary><h2>En-tête</h2></summary>
+          <label class="field" for="title"
+            >Titre (vide : aucun)
+            <input type="text" id="title" />
+          </label>
+          <label class="check"
+            ><input type="checkbox" id="showName" checked /> Ligne « Prénom / Date »</label
+          >
+        </details>
+
+        <section class="card actions">
+          <div class="field">
+            <label for="page">Format de la page</label>
+            <select id="page" data-seg>
+              <option value="A4P">A4 portrait</option>
+              <option value="A4L">A4 paysage</option>
+              <option value="A3P">A3 portrait</option>
+              <option value="A3L">A3 paysage</option>
+            </select>
+          </div>
+          <div class="row">
+            <button class="action primary" id="print" type="button">Imprimer / PDF</button>
+            <button class="action ghost" id="share" type="button">Copier le lien</button>
+          </div>
+        </section>
+      </aside>
+      <main class="preview"><div id="sheets"></div></main>
+    </div>
+    <script type="module" src="/tools/formes/main.js"></script>
+  </body>
+</html>

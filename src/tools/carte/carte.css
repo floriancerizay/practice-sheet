@@ -1,0 +1,206 @@
+/* Carte du monde : zone d'affichage, SVG, contrôles de zoom, bulles. Le panneau de réglages est dans styles/panel.css. */
+:root {
+  --ratio: 1.414;
+  --pw: 297mm;
+  --ph: 210mm;
+}
+.stage {
+  position: relative;
+  display: grid;
+  place-items: center;
+  padding: 18px 86px 18px 18px;
+  container-type: size;
+  min-width: 0;
+  min-height: 0;
+}
+#sheet {
+  position: relative;
+  width: min(100cqw, calc(100cqh * var(--ratio)));
+  aspect-ratio: var(--ratio);
+  background: #fff;
+  border-radius: 6px;
+  box-shadow:
+    0 2px 4px rgba(17, 24, 39, 0.1),
+    0 12px 32px rgba(17, 24, 39, 0.18);
+  transition: width 0.35s ease;
+}
+#map {
+  display: block;
+  width: 100%;
+  height: 100%;
+  touch-action: none;
+  cursor: grab;
+  border-radius: 6px;
+}
+#map:active {
+  cursor: grabbing;
+}
+.country {
+  cursor: pointer;
+}
+.loading {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font:
+    600 1.3rem 'Inter',
+    system-ui,
+    sans-serif;
+  background: rgba(255, 255, 255, 0.85);
+  border-radius: 6px;
+}
+.loading.err {
+  color: #b91c1c;
+  text-align: center;
+  padding: 20px;
+}
+
+.palettes {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  margin-top: 8px;
+}
+.swatch:hover {
+  border-color: #9ca3af;
+}
+.swatch.active {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.swatch {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: center;
+  padding: 7px;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  font-weight: 500;
+  font-size: 0.82rem;
+  color: var(--ink);
+}
+.swatch .dots {
+  display: flex;
+  gap: 3px;
+}
+.swatch .dots i {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 1px solid rgba(0, 0, 0, 0.25);
+  display: block;
+}
+
+.zoom-controls {
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.zoom-controls button {
+  width: 44px;
+  height: 44px;
+  font-size: 1.4rem;
+  font-weight: 400;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+  color: var(--ink);
+  box-shadow: 0 1px 3px rgba(17, 24, 39, 0.12);
+}
+.zoom-controls #z-center {
+  font-size: 0.66rem;
+  padding: 0;
+}
+.zoom-controls button:hover {
+  background: var(--accent-soft);
+}
+
+.tooltip {
+  position: fixed;
+  z-index: 20;
+  pointer-events: none;
+  padding: 6px 12px;
+  background: var(--ink);
+  color: #fff;
+  border-radius: 8px;
+  font-weight: 600;
+}
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: 24px;
+  transform: translateX(-50%);
+  z-index: 30;
+  padding: 12px 20px;
+  background: var(--ink);
+  color: #fff;
+  border-radius: 8px;
+  font-weight: 500;
+  max-width: 90vw;
+  text-align: center;
+}
+
+/* ---------- petits écrans ---------- */
+@media screen and (max-width: 860px) {
+  .stage {
+    height: 62vh;
+    order: -1;
+    padding: 12px 72px 12px 12px;
+  }
+}
+
+/* ---------- impression : seule la carte, en plein format ---------- */
+@media print {
+  html,
+  body {
+    height: auto !important;
+    background: #fff !important;
+    margin: 0;
+    padding: 0;
+    display: block;
+    overflow: hidden;
+  }
+  .panel,
+  .zoom-controls,
+  .tooltip,
+  .toast,
+  .loading {
+    display: none !important;
+  }
+  .app {
+    display: block;
+  }
+  .stage {
+    display: block;
+    height: auto !important;
+    padding: 0;
+    container-type: normal;
+  }
+  #sheet {
+    width: var(--pw);
+    height: calc(var(--ph) - 0.5mm);
+    aspect-ratio: auto;
+    margin: 0;
+    border-radius: 0;
+    box-shadow: none;
+    transition: none;
+    overflow: hidden;
+    break-inside: avoid;
+    page-break-after: avoid;
+  }
+  #map {
+    border-radius: 0;
+  }
+  * {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}

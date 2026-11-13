@@ -1,0 +1,37 @@
+@import '@fontsource/inter/latin-400.css';
+@import '@fontsource/inter/latin-500.css';
+@import '@fontsource/inter/latin-600.css';
+/* Polices embarquées (licences dans assets/fonts/). */
+@font-face {
+  font-family: 'Andika';
+  src: url('../assets/fonts/Andika-Regular.ttf') format('truetype');
+  font-display: block;
+}
+@font-face {
+  font-family: 'Playwrite FR Trad';
+  src: url('../assets/fonts/PlaywriteFRTrad.ttf') format('truetype');
+  font-weight: 100 400;
+  font-display: block;
+}
+@font-face {
+  font-family: 'Lexend';
+  src: url('../assets/fonts/Lexend.ttf') format('truetype');
+  font-weight: 100 900;
+  font-display: block;
+}
+@font-face {
+  font-family: 'Atkinson Hyperlegible';
+  src: url('../assets/fonts/AtkinsonHyperlegible-Regular.ttf') format('truetype');
+  font-display: block;
+}
+@font-face {
+  font-family: 'OpenDyslexic';
+  src: url('../assets/fonts/OpenDyslexic-Regular.otf') format('opentype');
+  font-display: block;
+}
+@font-face {
+  font-family: 'Playwrite FR Moderne';
+  src: url('../assets/fonts/PlaywriteFRModerne.ttf') format('truetype');
+  font-weight: 100 400;
+  font-display: block;
+}

@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Labyrinthes</title>
+  </head>
+  <body>
+    <nav class="topbar" id="topbar"></nav>
+    <div class="app">
+      <aside class="panel" aria-label="Réglages">
+        <details class="card" open>
+          <summary><h2>Labyrinthe</h2></summary>
+          <label class="field" for="shape"
+            >Forme
+            <select id="shape">
+              <option value="rect">Rectangulaire</option>
+              <option value="round">Rond</option>
+              <option value="heart">Cœur</option>
+              <option value="triangle">Triangle</option>
+              <option value="diamond">Losange</option>
+              <option value="hexagon">Hexagone</option>
+            </select>
+          </label>
+          <div class="field">
+            <label for="level">Difficulté</label>
+            <select id="level" data-seg>
+              <option value="facile">Facile</option>
+              <option value="moyen" selected>Moyen</option>
+              <option value="difficile">Difficile</option>
+              <option value="expert">Expert</option>
+            </select>
+          </div>
+          <button class="action" id="shuffle" type="button">Nouveau labyrinthe</button>
+        </details>
+
+        <details class="card" open>
+          <summary><h2>Style</h2></summary>
+          <div class="field">
+            <label for="style">Murs</label>
+            <select id="style" data-seg>
+              <option value="droit">Traits droits</option>
+              <option value="arrondi">Coins arrondis</option>
+              <option value="tubes">Tubes</option>
+            </select>
+          </div>
+          <div class="field" id="contour-row">
+            <label for="contour">Contour (cœur, triangle, losange, hexagone)</label>
+            <select id="contour" data-seg>
+              <option value="cases">En escalier</option>
+              <option value="lisse">Lisse</option>
+            </select>
+          </div>
+        </details>
+
+        <details class="card" open>
+          <summary><h2>Corrigé</h2></summary>
+          <div class="field">
+            <label for="solution">Où l'afficher ?</label>
+            <select id="solution" data-seg>
+              <option value="none">Aucun</option>
+              <option value="end">Page à part</option>
+              <option value="sheet">Sur la feuille</option>
+            </select>
+          </div>
+        </details>
+
+        <details class="card" open>
+          <summary><h2>En-tête</h2></summary>
+          <label class="field" for="title"
+            >Titre (vide : aucun)
+            <input type="text" id="title" />
+          </label>
+          <label class="check"
+            ><input type="checkbox" id="showName" checked /> Ligne « Prénom / Date »</label
+          >
+        </details>
+
+        <section class="card actions">
+          <div class="field">
+            <label for="page">Format de la page</label>
+            <select id="page" data-seg>
+              <option value="A4P">A4 portrait</option>
+              <option value="A4L">A4 paysage</option>
+              <option value="A3P">A3 portrait</option>
+              <option value="A3L">A3 paysage</option>
+            </select>
+          </div>
+          <div class="row">
+            <button class="action primary" id="print" type="button">Imprimer / PDF</button>
+            <button class="action ghost" id="share" type="button">Copier le lien</button>
+          </div>
+        </section>
+      </aside>
+      <main class="preview"><div id="sheets"></div></main>
+    </div>
+    <script type="module" src="/tools/labyrinthe/main.js"></script>
+  </body>
+</html>

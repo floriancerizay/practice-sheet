@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Coloration de texte pour la lecture</title>
+  </head>
+  <body>
+    <nav class="topbar" id="topbar"></nav>
+    <div class="app">
+      <aside class="panel" aria-label="Réglages">
+        <details class="card" open>
+          <summary><h2>Texte</h2></summary>
+          <label class="field" for="text"
+            >Texte à colorer
+            <textarea id="text" style="min-height: 9rem">
+LE PETIT CHAT MANGE UNE SOURIS. LES ENFANTS JOUENT DANS LE JARDIN AVEC UN BALLON.</textarea>
+          </label>
+        </details>
+
+        <details class="card" open>
+          <summary><h2>Mise en page</h2></summary>
+          <div class="field">
+            <label for="layout">Présentation</label>
+            <select id="layout" data-seg>
+              <option value="classic">Classique</option>
+              <option value="dyslexia">Dyslexie</option>
+              <option value="custom" hidden>Personnalisée</option>
+            </select>
+          </div>
+          <p class="hint">
+            Dyslexie : police adaptée, grand interligne, lettres espacées, sans italique. Les
+            réglages fins sont dans « Réglages avancés ».
+          </p>
+        </details>
+
+        <details class="card" open>
+          <summary><h2>Couleurs</h2></summary>
+          <div class="field">
+            <label for="palette">Palette</label>
+            <select id="palette">
+              <option value="def">Par défaut</option>
+              <option value="cb">Daltonisme (Okabe-Ito, sûre pour tous)</option>
+              <option value="bw">Noir et blanc (indices)</option>
+              <option value="custom">Personnalisée</option>
+            </select>
+          </div>
+          <input type="color" id="c-v" value="#d62828" data-name="Voyelles" />
+          <input type="color" id="c-c" value="#111111" data-name="Consonnes" />
+          <input type="color" id="c-xv" value="#1d5fd1" data-name="Sons voyelles (ou, on, an…)" />
+          <input type="color" id="c-xc" value="#1a8f3c" data-name="Sons consonnes (ch, ph…)" />
+          <input type="color" id="c-m" value="#9a9a9a" data-name="Lettres muettes" />
+          <label class="check"
+            ><input type="checkbox" id="hints" /> Indices non colorés (souligné, gras,
+            italique)</label
+          >
+        </details>
+
+        <details class="card">
+          <summary><h2>Réglages avancés</h2></summary>
+          <label class="field" for="font"
+            >Police
+            <select id="font">
+              <optgroup label="Apprentissage">
+                <option value="Andika">Andika (script, conçue pour l'apprentissage)</option>
+                <option value="Playwrite FR Trad">Cursive scolaire (Trad)</option>
+                <option value="Playwrite FR Moderne">Cursive moderne</option>
+              </optgroup>
+              <optgroup label="Lisibilité / dyslexie">
+                <option value="OpenDyslexic">OpenDyslexic</option>
+                <option value="Lexend">Lexend</option>
+                <option value="Atkinson Hyperlegible">Atkinson Hyperlegible</option>
+              </optgroup>
+            </select>
+          </label>
+          <div class="pair">
+            <label class="field" for="fs"
+              >Taille (pt)
+              <input type="number" id="fs" value="22" min="10" max="60" />
+            </label>
+            <label class="field" for="lh"
+              >Interligne
+              <input type="number" id="lh" value="1.9" min="1" max="4" step="0.1" />
+            </label>
+          </div>
+          <label class="field" for="ls"
+            >Espacement des lettres (em)
+            <input type="number" id="ls" value="0.05" min="0" max="0.5" step="0.01" />
+          </label>
+        </details>
+
+        <details class="card" open>
+          <summary><h2>En-tête</h2></summary>
+          <label class="field" for="title"
+            >Titre (vide : aucun)
+            <input type="text" id="title" />
+          </label>
+          <label class="check"
+            ><input type="checkbox" id="showName" checked /> Ligne « Prénom / Date »</label
+          >
+        </details>
+
+        <section class="card actions">
+          <div class="field">
+            <label for="page">Format de la page</label>
+            <select id="page" data-seg>
+              <option value="A4P">A4 portrait</option>
+              <option value="A4L">A4 paysage</option>
+              <option value="A3P">A3 portrait</option>
+              <option value="A3L">A3 paysage</option>
+            </select>
+          </div>
+          <div class="row">
+            <button class="action primary" id="print" type="button">Imprimer / PDF</button>
+            <button class="action ghost" id="share" type="button">Copier le lien</button>
+          </div>
+          <p class="hint">
+            Règles heuristiques : quelques mots peuvent être mal découpés (noms propres, mots
+            rares).
+          </p>
+        </section>
+      </aside>
+      <main class="preview">
+        <section class="sheet flow">
+          <div id="head"></div>
+          <div id="out" class="reading"></div>
+        </section>
+      </main>
+    </div>
+    <script type="module" src="/tools/lecture/main.js"></script>
+  </body>
+</html>
