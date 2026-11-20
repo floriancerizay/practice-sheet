@@ -44,7 +44,7 @@
   display: grid;
   place-items: center;
   font:
-    600 1.3rem 'Inter',
+    600 1.3rem 'Andika',
     system-ui,
     sans-serif;
   background: rgba(255, 255, 255, 0.85);
@@ -63,7 +63,7 @@
   margin-top: 8px;
 }
 .swatch:hover {
-  border-color: #9ca3af;
+  border-color: var(--line-strong);
 }
 .swatch.active {
   background: var(--accent-soft);

@@ -4,6 +4,7 @@
   line-height: var(--lh, 1.9);
   letter-spacing: var(--ls, 0);
   font-family: var(--ff, 'Andika');
+  font-weight: var(--fw, 600);
   white-space: pre-wrap;
 }
 .reading .t-v {
@@ -30,6 +31,10 @@
 .reading.hints .t-m {
   font-style: italic;
   opacity: 0.75;
+}
+/* En mode indices, le gras désigne les voyelles : les autres lettres restent en graisse normale. */
+.reading.hints span {
+  font-weight: 400;
 }
 .reading.hints .t-v {
   font-weight: 700;

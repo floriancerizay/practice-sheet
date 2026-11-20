@@ -1,5 +1,7 @@
 /* Moteur de rendu de la carte : tout est dessiné dans un seul <svg> (feuille complète),
  * en unités « 1 U = 1 mm de papier » (viewBox = taille de la page × 4). */
+import { download, svgToPng } from '../../shared/export.js';
+import { PAGES as SHEET_PAGES } from '../../shared/page.js';
 import * as d3 from 'd3';
 import * as topojson from 'topojson-client';
 import { colorGraph } from './fourcolor.js';
@@ -11,7 +13,10 @@ import { flagUrl } from './data/flags.js';
 import { fontFaceCss } from './data/fonts-embed.js';
 
 const U = 4; // pixels du viewBox par millimètre
-export const PAGES = { A4P: [210, 297], A4L: [297, 210], A3P: [297, 420], A3L: [420, 297] };
+// formats de page de la feuille commune, sous la forme [largeur, hauteur] en mm
+export const PAGES = Object.fromEntries(
+  Object.entries(SHEET_PAGES).map(([k, p]) => [k, [p.w, p.h]]),
+);
 const rad = Math.PI / 180;
 const mercY = (lat) => Math.log(Math.tan(Math.PI / 4 + (lat * rad) / 2));
 const NS = 'http://www.w3.org/2000/svg';
@@ -30,16 +35,6 @@ function biggestPolygon(f) {
     }
   }
   return best;
-}
-
-function download(name, blob) {
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = name;
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-  setTimeout(() => URL.revokeObjectURL(a.href), 2000);
 }
 
 export class MapView {
@@ -844,29 +839,7 @@ export class MapView {
   }
 
   async exportPNG() {
-    const str = await this._serialize();
-    const url = URL.createObjectURL(new Blob([str], { type: 'image/svg+xml;charset=utf-8' }));
-    const img = new Image();
-    const pxmm = 300 / 25.4;
-    const cw = Math.round(this.pw * pxmm),
-      ch = Math.round(this.ph * pxmm);
-    img.width = cw;
-    img.height = ch;
-    img.src = url;
-    await img.decode();
-    const cv = document.createElement('canvas');
-    cv.width = cw;
-    cv.height = ch;
-    const ctx = cv.getContext('2d');
-    ctx.fillStyle = '#fff';
-    ctx.fillRect(0, 0, cw, ch);
-    ctx.drawImage(img, 0, 0, cw, ch);
-    URL.revokeObjectURL(url);
-    await new Promise((res) =>
-      cv.toBlob((b) => {
-        download('carte.png', b);
-        res();
-      }, 'image/png'),
-    );
+    const svg = await this._serialize();
+    download('carte.png', await svgToPng({ w: this.pw, h: this.ph, svg }));
   }
 }

@@ -1,5 +1,6 @@
 /* Logique de l'application : état, contrôles, chargement des données, persistance. */
 import '../../styles/fonts.css';
+import '../../styles/pico.css';
 import '../../styles/panel.css';
 import '../../styles/base.css';
 import './carte.css';

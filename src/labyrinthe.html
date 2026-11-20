@@ -1,17 +1,28 @@
 <!doctype html>
-<html lang="fr">
+<html lang="fr" data-theme="light">
   <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Labyrinthes</title>
+    <meta
+      name="description"
+      content="Labyrinthes de toutes formes, 4 niveaux, avec corrigé, à imprimer."
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Labyrinthes" />
+    <meta
+      property="og:description"
+      content="Labyrinthes de toutes formes, 4 niveaux, avec corrigé, à imprimer."
+    />
+    <link rel="icon" type="image/svg+xml" href="/assets/logo.svg" />
   </head>
   <body>
-    <nav class="topbar" id="topbar"></nav>
+    <nav class="topbar pico" id="topbar"></nav>
     <div class="app">
-      <aside class="panel" aria-label="Réglages">
+      <aside class="panel pico" aria-label="Réglages">
         <details class="card" open>
           <summary><h2>Labyrinthe</h2></summary>
-          <label class="field" for="shape"
+          <label class="field" id="shape-row" for="shape"
             >Forme
             <select id="shape">
               <option value="rect">Rectangulaire</option>
@@ -20,8 +31,17 @@
               <option value="triangle">Triangle</option>
               <option value="diamond">Losange</option>
               <option value="hexagon">Hexagone</option>
+              <option value="word">Mot</option>
             </select>
           </label>
+          <label class="field" for="letterText" id="letter-text-row"
+            >Mot à suivre
+            <input type="text" id="letterText" value="MAISON" maxlength="20" />
+          </label>
+          <p class="hint" id="letters-hint">
+            On avance de case en case (sans diagonale) en lisant les lettres du mot dans l'ordre, le
+            mot se répétant jusqu'à la sortie.
+          </p>
           <div class="field">
             <label for="level">Difficulté</label>
             <select id="level" data-seg>
@@ -31,10 +51,14 @@
               <option value="expert">Expert</option>
             </select>
           </div>
+          <label class="field" for="count"
+            >Nombre de feuilles (un labyrinthe différent par feuille)
+            <input type="number" id="count" value="1" min="1" max="30" step="1" />
+          </label>
           <button class="action" id="shuffle" type="button">Nouveau labyrinthe</button>
         </details>
 
-        <details class="card" open>
+        <details class="card" open id="style-card">
           <summary><h2>Style</h2></summary>
           <div class="field">
             <label for="style">Murs</label>
@@ -64,33 +88,6 @@
             </select>
           </div>
         </details>
-
-        <details class="card" open>
-          <summary><h2>En-tête</h2></summary>
-          <label class="field" for="title"
-            >Titre (vide : aucun)
-            <input type="text" id="title" />
-          </label>
-          <label class="check"
-            ><input type="checkbox" id="showName" checked /> Ligne « Prénom / Date »</label
-          >
-        </details>
-
-        <section class="card actions">
-          <div class="field">
-            <label for="page">Format de la page</label>
-            <select id="page" data-seg>
-              <option value="A4P">A4 portrait</option>
-              <option value="A4L">A4 paysage</option>
-              <option value="A3P">A3 portrait</option>
-              <option value="A3L">A3 paysage</option>
-            </select>
-          </div>
-          <div class="row">
-            <button class="action primary" id="print" type="button">Imprimer / PDF</button>
-            <button class="action ghost" id="share" type="button">Copier le lien</button>
-          </div>
-        </section>
       </aside>
       <main class="preview"><div id="sheets"></div></main>
     </div>

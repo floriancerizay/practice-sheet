@@ -1,6 +1,13 @@
 import { test } from 'vitest';
 import assert from 'node:assert/strict';
-import { generate, solve } from '../src/tools/labyrinthe/maze.js';
+import {
+  generate,
+  solve,
+  bestOf,
+  countChoices,
+  rectDegree,
+  rectOpenings,
+} from '../src/tools/labyrinthe/maze.js';
 
 test('reproductible avec la même graine', () => {
   assert.deepEqual(generate(10, 12, 42).walls, generate(10, 12, 42).walls);
@@ -14,18 +21,55 @@ test('labyrinthe parfait : cols*rows-1 passages et chemin valide', () => {
   ]) {
     const m = generate(c, r, s);
     let open = 0;
-    m.walls.forEach((row) =>
-      row.forEach((w) => {
-        if (!w[1]) open++;
-        if (!w[2]) open++;
+    m.walls.forEach((row, y) =>
+      row.forEach((w, x) => {
+        // l'entrée et la sortie sont des murs ouverts sur le bord : ce ne sont pas des passages entre deux cases
+        if (!w[1] && x < c - 1) open++;
+        if (!w[2] && y < r - 1) open++;
       }),
     );
     assert.equal(open, c * r - 1);
     const p = solve(m);
-    assert.deepEqual(p[0], [0, 0]);
-    assert.deepEqual(p.at(-1), [c - 1, r - 1]);
+    assert.deepEqual(p[0], [m.entrance[0], m.entrance[1]]);
+    assert.deepEqual(p.at(-1), [m.exit[0], m.exit[1]]);
     for (let k = 1; k < p.length; k++)
       assert.equal(Math.abs(p[k][0] - p[k - 1][0]) + Math.abs(p[k][1] - p[k - 1][1]), 1);
+  }
+});
+
+test('entrée et sortie : ouvertures du bord, distinctes, variables selon la graine', () => {
+  const ends = new Set();
+  for (let seed = 1; seed <= 40; seed++) {
+    const m = generate(12, 9, seed);
+    for (const [x, y, d] of [m.entrance, m.exit]) {
+      assert.ok(rectOpenings(12, 9).some((o) => o[0] === x && o[1] === y && o[2] === d));
+      assert.equal(m.walls[y][x][d], false);
+    }
+    assert.notDeepEqual(m.entrance, m.exit);
+    ends.add(`${m.entrance}`);
+  }
+  assert.ok(ends.size > 10, 'entrances not varied enough');
+});
+
+test("far : plus far est grand, plus la sortie est loin de l'entrée", () => {
+  let near = 0,
+    farther = 0;
+  for (let seed = 1; seed <= 30; seed++) {
+    near += solve(generate(20, 20, seed, 0.2)).length;
+    farther += solve(generate(20, 20, seed, 1)).length;
+  }
+  assert.ok(farther > near * 1.5, `${near} / ${farther}`);
+});
+
+test("bestOf : reproductible, et dans la fourchette quand c'est possible", () => {
+  const build = (seed) => generate(14, 19, seed, 0.75);
+  const measure = (m) => countChoices(solve(m), (c) => rectDegree(m, c));
+  for (const seed of [1, 2, 3, 4, 5]) {
+    const a = bestOf(build, measure, [8, 15], seed),
+      b = bestOf(build, measure, [8, 15], seed);
+    assert.deepEqual(a.walls, b.walls);
+    const v = measure(a);
+    assert.ok(v >= 8 && v <= 15, `graine ${seed} : ${v} carrefours`);
   }
 });
 
@@ -47,7 +91,7 @@ test('labyrinthe rond : arbre couvrant, reproductible, chemin entrée → centre
     assert.equal(m.links.size, cells - 1);
     assert.deepEqual([...m.links], [...generateRound(rings, seed).links]);
     const p = solveRound(m);
-    assert.deepEqual(p[0], [rings - 1, 0]);
+    assert.deepEqual(p[0], [rings - 1, m.start]);
     assert.deepEqual(p.at(-1), [0, 0]);
     for (let k = 1; k < p.length; k++) {
       const [a, b] = [p[k - 1], p[k]];
@@ -72,12 +116,15 @@ test('labyrinthes en forme : arbre couvrant des cases de la forme, chemin entré
           if (!m.walls[y][x][1]) open++;
           if (!m.walls[y][x][2]) open++;
         }
-      if (m.exit[2] === 1 || m.exit[2] === 2) open--; // l'ouverture de sortie n'est pas un passage entre deux cases
+      // les ouvertures d'entrée et de sortie ne sont pas des passages entre deux cases
+      for (const [x, y, d] of [m.entrance, m.exit])
+        if (d === 1 || d === 2) open -= m.walls[y][x][d] ? 0 : 1;
       assert.equal(open, cells - 1, `${shape} ${n}`);
       assert.ok(cells > n, `${shape} ${n} trop petit`);
       const p = solveMask(m);
-      assert.deepEqual(p[0], m.entrance);
+      assert.deepEqual(p[0], [m.entrance[0], m.entrance[1]]);
       assert.deepEqual(p.at(-1), [m.exit[0], m.exit[1]]);
+      assert.equal(m.walls[m.entrance[1]][m.entrance[0]][m.entrance[2]], false);
     }
   }
 });

@@ -1,5 +1,6 @@
-import { headHTML, headHeight } from '../../shared/sheet-header.js';
-import { usableHeight, usableWidth } from '../../shared/page.js';
+import { esc } from '../../shared/sheet-header.js';
+import { buildRows, paginate, renderPages, rowBox } from '../../shared/sheets.js';
+import { usableWidth } from '../../shared/page.js';
 import { STROKES, STROKE_W, STROKE_H, LETTERS, hasStrokes } from './strokes.js';
 
 // em = taille de police en interlignes ; la ligne de base est à 4 interlignes du haut d'une rangée (8 interlignes).
@@ -11,8 +12,6 @@ const FONTS = {
 };
 export const fontFamily = (style) => FONTS[style]?.family ?? FONTS.script.family;
 
-const esc = (s) =>
-  s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
 const ctx = document.createElement('canvas').getContext('2d');
 
 export function textWidthMm(text, style, i) {
@@ -132,28 +131,19 @@ export function rowSVG(cfg, item, rowKind) {
     n++;
     x += w + gap;
   }
-  return `<svg class="row-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${h}" width="${W}mm" height="${h}mm">${DEFS}${ruling(cfg, h)}${body}</svg>`;
+  return { h, svg: rowBox(cfg.page, h, `${DEFS}${ruling(cfg, h)}${body}`) };
 }
 
 /** Construit toutes les rangées puis les répartit en pages. */
 export function buildPages(cfg, items) {
-  const rows = [];
-  for (const it of items) {
-    for (let r = 0; r < cfg.rowsPerItem; r++) {
-      const first = r === 0;
-      const rowKind = r < cfg.dotRows ? 'dots' : 'blank';
-      rows.push(rowSVG({ ...cfg, __first: first }, it, rowKind));
-    }
-  }
-  const perPage = Math.max(1, Math.floor((usableHeight(cfg.page) - headHeight(cfg)) / (8 * cfg.i)));
-  const pages = [];
-  for (let k = 0; k < rows.length; k += perPage) pages.push(rows.slice(k, k + perPage));
-  return pages.length ? pages : [[rowSVG(cfg, '', 'blank')]];
+  const pages = paginate(cfg, buildRows(cfg, items, cfg.rowsPerItem, rowSVG));
+  return pages.length ? pages : [[rowSVG(cfg, '', 'blank').svg]];
 }
 
 export function renderSheets(target, cfg, items) {
-  const pages = buildPages(cfg, items);
-  target.innerHTML = pages
-    .map((rows) => `<section class="sheet">${headHTML(cfg)}${rows.join('')}</section>`)
-    .join('');
+  renderPages(
+    target,
+    cfg,
+    buildPages(cfg, items).map((rows) => ({ html: rows.join('') })),
+  );
 }

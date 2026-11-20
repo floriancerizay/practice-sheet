@@ -13,9 +13,9 @@ const fire = (input) => input.dispatchEvent(new Event('input', { bubbles: true }
  * Les `<option hidden>` (état « personnalisé ») n'ont pas de bouton. Renvoie une fonction de rafraîchissement.
  */
 export function segmented(select) {
-  const options = [...select.options].filter((o) => !o.hidden);
-  // 2 boutons : 2 colonnes ; 3 : 3 colonnes ; 4 et plus : 2 colonnes
-  const seg = el('div', options.length === 3 ? 'seg seg-3' : 'seg seg-2');
+  // toutes les options ont un bouton ; celui d'une option masquée (`hidden`) est caché, à chaque rafraîchissement
+  const options = [...select.options];
+  const seg = el('div', 'seg');
   const buttons = options.map((o) => {
     const b = el('button', '', o.textContent);
     b.type = 'button';
@@ -26,12 +26,17 @@ export function segmented(select) {
     seg.append(b);
     return b;
   });
-  const refresh = () =>
+  const refresh = () => {
     buttons.forEach((b, i) => {
       const on = options[i].value === select.value;
+      b.hidden = options[i].hidden;
       b.classList.toggle('active', on);
       b.setAttribute('aria-pressed', String(on));
     });
+    // 2 boutons : 2 colonnes ; 3 : 3 colonnes ; 4 et plus : 2 colonnes
+    const n = options.filter((o) => !o.hidden).length;
+    seg.className = n === 3 ? 'seg seg-3' : 'seg seg-2';
+  };
   select.classList.add('sr-only');
   select.setAttribute('aria-hidden', 'true');
   select.tabIndex = -1;
@@ -151,4 +156,36 @@ export function colorPicker(input, name) {
   field.addEventListener('keydown', (e) => e.key === 'Escape' && (close(), btn.focus()));
   refresh();
   return refresh;
+}
+
+/** Carte « En-tête » commune aux feuilles : titre (vide = aucun) et ligne « Prénom / Date ». */
+export function headerCard() {
+  const card = el('details', 'card');
+  card.open = true;
+  card.innerHTML = `
+    <summary><h2>En-tête</h2></summary>
+    <label class="field" for="title">Titre (vide : aucun)<input type="text" id="title" /></label>
+    <label class="check"><input type="checkbox" id="showName" checked /> Ligne « Prénom / Date »</label>`;
+  return card;
+}
+
+/** Bloc d'actions commun : format de la page, imprimer, lien de partage, exports SVG et PNG. */
+export function actionsCard() {
+  const card = el('section', 'card actions');
+  card.innerHTML = `
+    <label class="field inline" for="page">Format de la page
+      <select id="page">
+        <option value="A4P">A4 portrait</option>
+        <option value="A4L">A4 paysage</option>
+        <option value="A3P">A3 portrait</option>
+        <option value="A3L">A3 paysage</option>
+      </select>
+    </label>
+    <div class="row">
+      <button class="action primary" id="print" type="button">Imprimer / PDF</button>
+      <button class="action ghost" id="share" type="button">Copier le lien</button>
+      <button class="action" id="export-svg" type="button">Exporter SVG</button>
+      <button class="action" id="export-png" type="button">Exporter PNG</button>
+    </div>`;
+  return card;
 }

@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Practice sheet">
+  <title>Practice sheet</title>
+  <!-- feuille qui entre : un tracé à repasser en pointillés -->
+  <path d="M17 4h24l8 8v20H17z" fill="#fff" stroke="#1f2937" stroke-width="2.4" stroke-linejoin="round"/>
+  <path d="M41 4v8h8" fill="none" stroke="#1f2937" stroke-width="2.4" stroke-linejoin="round"/>
+  <path d="M22 24c3-9 6 4 9-5s6 3 9-4" fill="none" stroke="#d03030" stroke-width="2" stroke-linecap="round" stroke-dasharray="0.1 4.2"/>
+  <circle cx="22" cy="24" r="1.7" fill="#d03030"/>
+  <!-- imprimante -->
+  <rect x="4" y="28" width="56" height="22" rx="7" fill="#1e40af"/>
+  <rect x="9" y="33" width="46" height="4" rx="2" fill="#0f2a78"/>
+  <circle cx="50" cy="43.5" r="2.2" fill="#7ee0a1"/>
+  <!-- feuille imprimée : zigzag de graphisme -->
+  <path d="M15 46h34v14H15z" fill="#fff" stroke="#1f2937" stroke-width="2.4" stroke-linejoin="round"/>
+  <path d="M19 55l5-5 5 5 5-5 5 5 5-5" fill="none" stroke="#1e40af" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

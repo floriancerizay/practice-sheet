@@ -1,5 +1,5 @@
-import { headHTML, headHeight } from '../../shared/sheet-header.js';
-import { usableHeight, usableWidth } from '../../shared/page.js';
+import { buildRows, paginate, renderPages, rowBox } from '../../shared/sheets.js';
+import { usableWidth } from '../../shared/page.js';
 import { SHAPES, SHAPE_BY_ID, shapeWidth } from './shapes.js';
 
 const DEFS =
@@ -62,37 +62,20 @@ export function rowSVG(cfg, shape, kind) {
   }
   return {
     h,
-    svg: `<svg class="row-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${h}" width="${W}mm" height="${h}mm">${DEFS}${background(cfg, h)}${body}</svg>`,
+    svg: rowBox(cfg.page, h, `${DEFS}${background(cfg, h)}${body}`),
   };
 }
 
 export function buildPages(cfg, ids) {
-  const rows = [];
-  for (const id of ids) {
-    const shape = SHAPE_BY_ID[id];
-    if (!shape) continue;
-    for (let r = 0; r < cfg.rowsPerShape; r++)
-      rows.push(rowSVG({ ...cfg, __first: r === 0 }, shape, r < cfg.dotRows ? 'dots' : 'blank'));
-  }
-  const avail = usableHeight(cfg.page) - headHeight(cfg);
-  const pages = [];
-  let cur = [],
-    used = 0;
-  for (const r of rows) {
-    if (used + r.h > avail && cur.length) {
-      pages.push(cur);
-      cur = [];
-      used = 0;
-    }
-    cur.push(r.svg);
-    used += r.h;
-  }
-  if (cur.length) pages.push(cur);
+  const shapes = ids.map((id) => SHAPE_BY_ID[id]).filter(Boolean);
+  const pages = paginate(cfg, buildRows(cfg, shapes, cfg.rowsPerShape, rowSVG));
   return pages.length ? pages : [[rowSVG(cfg, SHAPES[0], 'blank').svg]];
 }
 
 export function renderSheets(target, cfg, ids) {
-  target.innerHTML = buildPages(cfg, ids)
-    .map((rows) => `<section class="sheet">${headHTML(cfg)}${rows.join('')}</section>`)
-    .join('');
+  renderPages(
+    target,
+    cfg,
+    buildPages(cfg, ids).map((rows) => ({ html: rows.join('') })),
+  );
 }

@@ -1,12 +1,14 @@
 /* Panneau de réglages commun à tous les outils (cartes repliables, champs, boutons segmentés, actions). */
 :root {
-  --ink: #1f2937;
-  --muted: #6b7280;
-  --line: #d5d9e0;
-  --accent: #1e40af;
-  --accent-soft: #e5ebfa;
-  --card: #ffffff;
-  --radius: 10px;
+  --ink: #24211c;
+  --muted: #6f685b;
+  --line: #d8cfbd;
+  --line-strong: #a89f8c;
+  --accent: #2c3a8c;
+  --accent-soft: #e7e5f4;
+  --card: #fffdf7;
+  --paper: #f3eee2;
+  --radius: 4px;
 }
 * {
   box-sizing: border-box;
@@ -18,13 +20,11 @@ body {
 }
 body {
   font:
-    15px/1.4 'Inter',
+    15px/1.45 'Andika',
     system-ui,
-    -apple-system,
-    'Segoe UI',
     sans-serif;
   color: var(--ink);
-  background: #e9ecf0;
+  background: var(--paper);
   display: flex;
   flex-direction: column;
 }
@@ -56,27 +56,25 @@ a {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  background: #f6f7f9;
+  background: #f8f4ea;
   border-right: 1px solid var(--line);
 }
 
 /* ---------- cartes de réglages ---------- */
 .card {
+  margin: 0;
   background: var(--card);
   border: 1px solid var(--line);
   border-radius: var(--radius);
   padding: 11px 14px 13px;
-  box-shadow: 0 1px 2px rgba(17, 24, 39, 0.05);
 }
 .card h2 {
   margin: 0;
   font:
-    600 0.8rem 'Inter',
+    700 0.95rem 'Andika',
     system-ui,
     sans-serif;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--muted);
+  color: var(--ink);
 }
 .card > summary {
   display: flex;
@@ -90,22 +88,8 @@ a {
 .card > summary::-webkit-details-marker {
   display: none;
 }
-.card > summary::after {
-  content: '';
-  width: 7px;
-  height: 7px;
-  border-right: 2px solid var(--muted);
-  border-bottom: 2px solid var(--muted);
-  transform: rotate(45deg) translateY(-2px);
-  transition: transform 0.15s;
-  flex: none;
-  margin-right: 4px;
-}
 .card[open] > summary {
   margin-bottom: 6px;
-}
-.card[open] > summary::after {
-  transform: rotate(-135deg) translateY(-2px);
 }
 .card > summary:focus-visible {
   outline: 2px solid var(--accent);
@@ -136,34 +120,21 @@ a {
   grid-template-columns: 1fr 1fr;
   gap: 10px;
 }
-select,
-input[type='text'],
-input[type='number'],
-textarea {
-  font: inherit;
-  font-weight: 400;
-  padding: 7px 10px;
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  background: #fff;
-  color: var(--ink);
-  width: 100%;
+/* champs, listes, cases et curseurs : style Pico (pico.css) ; seules les marges sont celles du panneau */
+.panel :is(input, select, textarea) {
+  margin: 0;
+  font-size: inherit;
+}
+.panel button {
+  margin-bottom: 0;
 }
 textarea {
   min-height: 5.5rem;
   resize: vertical;
 }
-select:focus-visible,
-input:focus-visible,
-textarea:focus-visible,
 button:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 1px;
-}
-input[type='range'] {
-  width: 100%;
-  accent-color: var(--accent);
-  height: 24px;
 }
 .check {
   display: flex;
@@ -174,9 +145,6 @@ input[type='range'] {
   cursor: pointer;
 }
 .check input {
-  width: 18px;
-  height: 18px;
-  accent-color: var(--accent);
   flex: none;
 }
 .checks {
@@ -206,7 +174,7 @@ button {
 .seg button {
   padding: 7px 6px;
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: var(--radius);
   background: #fff;
   font-weight: 500;
   font-size: 0.88rem;
@@ -215,8 +183,11 @@ button {
     background 0.1s,
     border-color 0.1s;
 }
+.seg button[hidden] {
+  display: none;
+}
 .seg button:hover {
-  border-color: #9ca3af;
+  border-color: var(--line-strong);
 }
 .seg button.active {
   background: var(--accent-soft);
@@ -226,13 +197,13 @@ button {
 .mini {
   padding: 4px 10px;
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: var(--radius);
   background: #fff;
   font-size: 0.84rem;
   color: var(--ink);
 }
 .mini:hover {
-  border-color: #9ca3af;
+  border-color: var(--line-strong);
 }
 .chips {
   display: flex;
@@ -246,13 +217,13 @@ button {
   padding: 9px 12px;
   margin-top: 8px;
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: var(--radius);
   background: #fff;
   color: var(--ink);
   font-weight: 500;
 }
 .action:hover {
-  border-color: #9ca3af;
+  border-color: var(--line-strong);
 }
 .action.primary {
   background: var(--accent);
@@ -262,19 +233,14 @@ button {
   margin-top: 0;
 }
 .action.primary:hover {
-  background: #1b3a9c;
+  background: #1f2a6b;
 }
 .action.ghost {
   background: transparent;
   color: var(--muted);
 }
 .actions {
-  position: sticky;
-  bottom: -14px;
   margin-top: auto;
-  box-shadow:
-    0 -8px 12px -6px #f6f7f9,
-    0 1px 2px rgba(17, 24, 39, 0.05);
 }
 .actions .row {
   display: grid;
@@ -282,10 +248,23 @@ button {
   gap: 8px;
 }
 .actions .row .action {
-  margin-top: 8px;
-}
-.actions .row:first-child .action {
   margin-top: 0;
+}
+.actions .row {
+  gap: 6px;
+}
+/* libellé et contrôle sur une ligne (format de page) */
+.field.inline {
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin: 0 0 8px;
+}
+.field.inline select {
+  width: auto;
+  flex: 1;
+  max-width: 62%;
 }
 
 /* ---------- sélecteur de couleur ---------- */
@@ -314,7 +293,7 @@ button {
   font-variant-numeric: tabular-nums;
 }
 .color-field .dot-btn:hover {
-  border-color: #9ca3af;
+  border-color: var(--line-strong);
 }
 .dot {
   display: inline-block;
@@ -373,8 +352,5 @@ button {
   }
   .panel {
     overflow: visible;
-  }
-  .actions {
-    position: static;
   }
 }

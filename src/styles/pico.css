@@ -1,0 +1,37 @@
+/*
+ * Pico CSS, version conditionnelle : ne s'applique qu'aux éléments .pico (barre de navigation,
+ * panneau de réglages, accueil). Les feuilles à imprimer restent hors de sa portée.
+ * Chargé dans une couche : les composants maison (panel.css, base.css) l'emportent toujours.
+ */
+@layer pico;
+@import '@picocss/pico/css/pico.conditional.min.css' layer(pico);
+
+/* Palette du site (panel.css) reportée sur les variables de Pico */
+:root[data-theme='light'] {
+  --pico-font-family: 'Andika', system-ui, sans-serif;
+  --pico-font-size: 100%;
+  --pico-line-height: 1.45;
+  --pico-border-radius: var(--radius);
+  --pico-spacing: 0.75rem;
+  --pico-form-element-spacing-vertical: 0.4rem;
+  --pico-form-element-spacing-horizontal: 0.65rem;
+  --pico-background-color: var(--paper);
+  --pico-color: var(--ink);
+  --pico-muted-color: var(--muted);
+  --pico-muted-border-color: var(--line);
+  --pico-primary: var(--accent);
+  --pico-primary-background: var(--accent);
+  --pico-primary-underline: rgba(44, 58, 140, 0.5);
+  --pico-primary-hover: #1f2a6b;
+  --pico-primary-hover-background: #1f2a6b;
+  --pico-primary-focus: rgba(44, 58, 140, 0.3);
+  --pico-text-selection-color: rgba(44, 58, 140, 0.2);
+  --pico-form-element-background-color: #fff;
+  --pico-form-element-active-background-color: #fff;
+  --pico-form-element-border-color: var(--line);
+  --pico-form-element-color: var(--ink);
+  --pico-form-element-focus-color: var(--accent);
+  --pico-form-element-selected-background-color: var(--accent-soft);
+  --pico-card-background-color: var(--card);
+  --pico-h2-color: var(--ink);
+}

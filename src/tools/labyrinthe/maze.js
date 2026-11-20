@@ -15,15 +15,49 @@ export function rng(seed) {
 const DX = [0, 1, 0, -1],
   DY = [-1, 0, 1, 0];
 
-/** Génère un labyrinthe cols x rows. `walls[y][x][d]` = true si le mur existe. Entrée : haut de (0,0). Sortie : bas de (cols-1,rows-1). */
-export function generate(cols, rows, seed) {
+/** Ouvertures possibles sur le bord d'une grille cols x rows : [x, y, d] (case et côté). */
+export function rectOpenings(cols, rows) {
+  const o = [];
+  for (let x = 0; x < cols; x++) o.push([x, 0, 0], [x, rows - 1, 2]);
+  for (let y = 0; y < rows; y++) o.push([cols - 1, y, 1], [0, y, 3]);
+  return o;
+}
+
+/** Distances (en cases) et prédécesseurs depuis la case `from`, en suivant les passages. */
+function rectBfs({ cols, rows, walls }, from) {
+  const dist = Array.from({ length: rows }, () => new Array(cols).fill(-1));
+  const prev = Array.from({ length: rows }, () => new Array(cols).fill(null));
+  dist[from[1]][from[0]] = 0;
+  const q = [from];
+  for (let h = 0; h < q.length; h++) {
+    const [x, y] = q[h];
+    for (let d = 0; d < 4; d++) {
+      const nx = x + DX[d],
+        ny = y + DY[d];
+      if (walls[y][x][d] || nx < 0 || ny < 0 || nx >= cols || ny >= rows || dist[ny][nx] >= 0)
+        continue;
+      dist[ny][nx] = dist[y][x] + 1;
+      prev[ny][nx] = [x, y];
+      q.push([nx, ny]);
+    }
+  }
+  return { dist, prev };
+}
+
+/**
+ * Génère un labyrinthe parfait cols x rows. `walls[y][x][d]` = true si le mur existe.
+ * L'entrée est une ouverture du bord tirée au hasard ; la sortie est une autre ouverture du bord, d'autant
+ * plus éloignée de l'entrée (dans le labyrinthe) que `far` est proche de 1. `entrance` et `exit` sont [x, y, côté].
+ */
+export function generate(cols, rows, seed, far = 1) {
   const rand = rng(seed);
   const walls = Array.from({ length: rows }, () =>
     Array.from({ length: cols }, () => [true, true, true, true]),
   );
   const seen = Array.from({ length: rows }, () => new Array(cols).fill(false));
-  const stack = [[0, 0]];
-  seen[0][0] = true;
+  const start = [Math.floor(rand() * cols), Math.floor(rand() * rows)];
+  const stack = [start];
+  seen[start[1]][start[0]] = true;
   while (stack.length) {
     const [x, y] = stack[stack.length - 1];
     const opts = [0, 1, 2, 3].filter((d) => {
@@ -43,31 +77,56 @@ export function generate(cols, rows, seed) {
     seen[ny][nx] = true;
     stack.push([nx, ny]);
   }
-  return { cols, rows, walls };
+  const m = { cols, rows, walls };
+  const openings = rectOpenings(cols, rows);
+  const entrance = openings[Math.floor(rand() * openings.length)];
+  const { dist } = rectBfs(m, entrance);
+  const others = openings
+    .filter((o) => o[0] !== entrance[0] || o[1] !== entrance[1])
+    .sort((a, b) => dist[a[1]][a[0]] - dist[b[1]][b[0]]);
+  const exit = others[Math.round(Math.min(1, Math.max(0, far)) * (others.length - 1))];
+  walls[entrance[1]][entrance[0]][entrance[2]] = false;
+  walls[exit[1]][exit[0]][exit[2]] = false;
+  return { ...m, entrance, exit };
 }
 
 /** Chemin de l'entrée à la sortie : liste de cases [x, y]. */
-export function solve({ cols, rows, walls }) {
-  const prev = Array.from({ length: rows }, () => new Array(cols).fill(null));
-  const q = [[0, 0]];
-  prev[0][0] = [-1, -1];
-  while (q.length) {
-    const [x, y] = q.shift();
-    if (x === cols - 1 && y === rows - 1) break;
-    for (let d = 0; d < 4; d++) {
-      const nx = x + DX[d],
-        ny = y + DY[d];
-      if (walls[y][x][d] || nx < 0 || ny < 0 || nx >= cols || ny >= rows || prev[ny][nx]) continue;
-      prev[ny][nx] = [x, y];
-      q.push([nx, ny]);
-    }
-  }
+export function solve(m) {
+  const { prev } = rectBfs(m, m.entrance);
   const path = [];
-  for (let c = [cols - 1, rows - 1]; c[0] >= 0; c = prev[c[1]][c[0]]) path.push(c);
+  for (let c = [m.exit[0], m.exit[1]]; c; c = prev[c[1]][c[0]]) path.push(c);
   return path.reverse();
 }
 
-// ---- Labyrinthes ronds : anneaux concentriques, cellules (r, i), centre = (0, 0). Entrée par l'anneau extérieur (cellule 0), arrivée au centre.
+/** Nombre de passages ouverts d'une case de la grille (sans compter l'entrée et la sortie). */
+export const rectDegree = ({ cols, rows, walls }, [x, y]) =>
+  [0, 1, 2, 3].filter(
+    (d) =>
+      !walls[y][x][d] && x + DX[d] >= 0 && y + DY[d] >= 0 && x + DX[d] < cols && y + DY[d] < rows,
+  ).length;
+
+/** Nombre d'embranchements sur le chemin : cases où l'on peut se tromper de direction. Mesure de difficulté. */
+export const countChoices = (path, degree) =>
+  path.reduce((n, c, k) => (k < path.length - 1 && degree(c) - (k ? 2 : 1) > 0 ? n + 1 : n), 0);
+
+/**
+ * Parmi `tries` labyrinthes tirés depuis la même graine, renvoie le premier dont la `measure` est dans [lo, hi],
+ * sinon le plus proche : la difficulté est homogène d'une graine à l'autre, et le résultat reste reproductible.
+ */
+export function bestOf(build, measure, [lo, hi], seed, tries = 12) {
+  let best = null,
+    gap = Infinity;
+  for (let j = 0; j < tries; j++) {
+    const m = build((seed * 31 + j) >>> 0),
+      v = measure(m),
+      g = v < lo ? lo - v : v > hi ? v - hi : 0;
+    if (g === 0) return m;
+    if (g < gap) [best, gap] = [m, g];
+  }
+  return best;
+}
+
+// ---- Labyrinthes ronds : anneaux concentriques, cellules (r, i), centre = (0, 0). Entrée par l'anneau extérieur, arrivée au centre.
 const ringCounts = (rings) => {
   const c = [1];
   for (let r = 1; r < rings; r++)
@@ -100,13 +159,15 @@ export function roundNeighbors(m, r, i) {
   return out;
 }
 
+/** Labyrinthe rond ; `start` est la cellule d'entrée sur l'anneau extérieur, tirée au hasard. */
 export function generateRound(rings, seed) {
   const rand = rng(seed),
     counts = ringCounts(rings),
-    m = { rings, counts, links: new Set() };
+    start = Math.floor(rand() * counts[rings - 1]),
+    m = { rings, counts, links: new Set(), start };
   const seen = counts.map((n) => new Array(n).fill(false));
-  const stack = [[rings - 1, 0]];
-  seen[rings - 1][0] = true;
+  const stack = [[rings - 1, start]];
+  seen[rings - 1][start] = true;
   while (stack.length) {
     const [r, i] = stack[stack.length - 1];
     const opts = roundNeighbors(m, r, i).filter(([r2, i2]) => !seen[r2][i2]);
@@ -122,13 +183,17 @@ export function generateRound(rings, seed) {
   return m;
 }
 
-/** Chemin de l'entrée (anneau extérieur, cellule 0) au centre : liste de cellules [r, i]. */
+/** Nombre de passages ouverts d'une cellule ronde. */
+export const roundDegree = (m, [r, i]) =>
+  roundNeighbors(m, r, i).filter(([r2, i2]) => roundLinked(m, r, i, r2, i2)).length;
+
+/** Chemin de l'entrée (anneau extérieur) au centre : liste de cellules [r, i]. */
 export function solveRound(m) {
-  const start = [m.rings - 1, 0],
+  const start = [m.rings - 1, m.start],
     prev = new Map([[`${start}`, null]]),
     q = [start];
-  while (q.length) {
-    const [r, i] = q.shift();
+  for (let h = 0; h < q.length; h++) {
+    const [r, i] = q[h];
     if (r === 0) break;
     for (const [r2, i2] of roundNeighbors(m, r, i)) {
       if (prev.has(`${r2},${i2}`) || !m.links.has(lk(r, i, r2, i2))) continue;
@@ -141,7 +206,7 @@ export function solveRound(m) {
   return path.reverse();
 }
 
-// ---- Labyrinthes en forme libre : grille n x n restreinte à un masque (cœur, triangle…). Entrée par le haut, sortie sur le contour.
+// ---- Labyrinthes en forme libre : grille n x n restreinte à un masque (cœur, triangle…). Entrée et sortie sur le contour.
 const inPoly = (u, v, P) => {
   let c = false;
   for (let i = 0, j = P.length - 1; i < P.length; j = i++) {
@@ -176,29 +241,36 @@ export const MASKS = {
     ),
 };
 
-/** Génère un labyrinthe parfait dans le masque ; les cases inaccessibles sont retirées. */
-export function generateMask(shape, n, seed) {
+const DIRS = [0, 1, 2, 3];
+/**
+ * Génère un labyrinthe parfait dans le masque ; les cases inaccessibles sont retirées. L'entrée est une ouverture
+ * du contour tirée au hasard, la sortie une autre ouverture, d'autant plus éloignée que `far` est proche de 1.
+ * `entrance` et `exit` sont [x, y, côté].
+ */
+export function generateMask(shape, n, seed, far = 1) {
   const rand = rng(seed),
     mask = MASKS[shape];
   const inside = Array.from({ length: n }, (_, y) =>
     Array.from({ length: n }, (_, x) => mask((x + 0.5) / n, (y + 0.5) / n)),
   );
-  const top = inside.findIndex((row) => row.some(Boolean));
-  const xs = inside[top].map((v, x) => (v ? x : -1)).filter((x) => x >= 0);
-  const entrance = [xs[Math.floor(xs.length / 2)], top];
+  const ok = (x, y) => x >= 0 && y >= 0 && x < n && y < n && inside[y][x];
+  // ouvertures possibles : case de la forme ayant un voisin hors de la forme
+  const openings = [];
+  for (let y = 0; y < n; y++)
+    for (let x = 0; x < n; x++)
+      if (inside[y][x])
+        for (const d of DIRS) if (!ok(x + DX[d], y + DY[d])) openings.push([x, y, d]);
   const walls = Array.from({ length: n }, () =>
     Array.from({ length: n }, () => [true, true, true, true]),
   );
+  const entrance = openings[Math.floor(rand() * openings.length)];
   const seen = Array.from({ length: n }, () => new Array(n).fill(false));
-  const ok = (x, y) => x >= 0 && y >= 0 && x < n && y < n && inside[y][x];
-  const stack = [entrance],
-    dist = new Map([[`${entrance}`, 0]]);
+  const stack = [[entrance[0], entrance[1]]],
+    dist = new Map([[`${entrance[0]},${entrance[1]}`, 0]]);
   seen[entrance[1]][entrance[0]] = true;
   while (stack.length) {
     const [x, y] = stack[stack.length - 1];
-    const opts = [0, 1, 2, 3].filter(
-      (d) => ok(x + DX[d], y + DY[d]) && !seen[y + DY[d]][x + DX[d]],
-    );
+    const opts = DIRS.filter((d) => ok(x + DX[d], y + DY[d]) && !seen[y + DY[d]][x + DX[d]]);
     if (!opts.length) {
       stack.pop();
       continue;
@@ -213,29 +285,27 @@ export function generateMask(shape, n, seed) {
     stack.push([nx, ny]);
   }
   for (let y = 0; y < n; y++) for (let x = 0; x < n; x++) inside[y][x] = seen[y][x];
-  // sortie : case du contour la plus éloignée de l'entrée (distance dans le labyrinthe), ouverte sur le côté extérieur
-  let best = null;
-  for (let y = 0; y < n; y++)
-    for (let x = 0; x < n; x++) {
-      if (!inside[y][x]) continue;
-      const d = [0, 1, 2, 3].find(
-        (k) => !ok(x + DX[k], y + DY[k]) && !(x === entrance[0] && y === entrance[1] && k === 0),
-      );
-      const dd = dist.get(`${x},${y}`);
-      if (d !== undefined && (!best || dd > best.dd)) best = { x, y, d, dd };
-    }
-  walls[entrance[1]][entrance[0]][0] = false;
-  walls[best.y][best.x][best.d] = false;
-  return { n, inside, walls, entrance, exit: [best.x, best.y, best.d] };
+  const others = openings
+    .filter(([x, y]) => inside[y][x] && (x !== entrance[0] || y !== entrance[1]))
+    .sort((a, b) => dist.get(`${a[0]},${a[1]}`) - dist.get(`${b[0]},${b[1]}`));
+  const exit = others[Math.round(Math.min(1, Math.max(0, far)) * (others.length - 1))];
+  walls[entrance[1]][entrance[0]][entrance[2]] = false;
+  walls[exit[1]][exit[0]][exit[2]] = false;
+  return { n, inside, walls, entrance, exit };
 }
+
+/** Nombre de passages ouverts d'une case d'un labyrinthe en forme libre (sans compter l'entrée et la sortie). */
+export const maskDegree = (m, [x, y]) =>
+  DIRS.filter((d) => !m.walls[y][x][d] && m.inside[y + DY[d]]?.[x + DX[d]]).length;
 
 export function solveMask(m) {
   const { n, walls } = m,
     key = (x, y) => y * n + x,
-    prev = new Map([[key(...m.entrance), null]]),
-    q = [m.entrance];
-  while (q.length) {
-    const [x, y] = q.shift();
+    start = [m.entrance[0], m.entrance[1]],
+    prev = new Map([[key(...start), null]]),
+    q = [start];
+  for (let h = 0; h < q.length; h++) {
+    const [x, y] = q[h];
     if (x === m.exit[0] && y === m.exit[1]) break;
     for (let d = 0; d < 4; d++) {
       const nx = x + DX[d],

@@ -1,31 +1,26 @@
 <!doctype html>
-<html lang="fr">
+<html lang="fr" data-theme="light">
   <head>
-    <meta charset="utf-8" />
+    <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Carte du monde – crée, colorie, imprime</title>
     <meta
       name="description"
       content="Crée, personnalise et imprime ta carte du monde : coloriage, projections, globe."
     />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Carte du monde – crée, colorie, imprime" />
+    <meta
+      property="og:description"
+      content="Crée, personnalise et imprime ta carte du monde : coloriage, projections, globe."
+    />
+    <link rel="icon" type="image/svg+xml" href="/assets/logo.svg" />
     <style id="page-style"></style>
   </head>
   <body>
-    <nav class="topbar" id="topbar"></nav>
+    <nav class="topbar pico" id="topbar"></nav>
     <div class="app">
-      <aside class="panel" id="panel" aria-label="Réglages">
-        <details class="card" open>
-          <summary><h2>En-tête</h2></summary>
-
-          <label class="field"
-            >Titre (vide : aucun)
-            <input type="text" data-key="title" maxlength="40" placeholder="Aucun" />
-          </label>
-          <label class="check"
-            ><input type="checkbox" data-key="showName" /> Ligne « Prénom / Date »</label
-          >
-        </details>
-
+      <aside class="panel pico" id="panel" aria-label="Réglages">
         <details class="card" open>
           <summary><h2>Carte</h2></summary>
           <label class="field"
@@ -139,23 +134,33 @@
           </label>
         </details>
 
+        <details class="card" open>
+          <summary><h2>En-tête</h2></summary>
+
+          <label class="field"
+            >Titre (vide : aucun)
+            <input type="text" data-key="title" maxlength="40" placeholder="Aucun" />
+          </label>
+          <label class="check"
+            ><input type="checkbox" data-key="showName" /> Ligne « Prénom / Date »</label
+          >
+        </details>
+
         <section class="card actions">
-          <div class="field">
-            Format de la page
-            <div class="seg seg-2">
-              <button data-key="format" data-value="A4P">A4 portrait</button>
-              <button data-key="format" data-value="A4L">A4 paysage</button>
-              <button data-key="format" data-value="A3P">A3 portrait</button>
-              <button data-key="format" data-value="A3L">A3 paysage</button>
-            </div>
-          </div>
+          <label class="field inline"
+            >Format de la page
+            <select data-key="format">
+              <option value="A4P">A4 portrait</option>
+              <option value="A4L">A4 paysage</option>
+              <option value="A3P">A3 portrait</option>
+              <option value="A3L">A3 paysage</option>
+            </select>
+          </label>
           <div class="row">
             <button class="action primary" id="btn-print">Imprimer</button>
             <button class="action ghost" id="btn-link">Copier le lien</button>
-          </div>
-          <div class="row">
-            <button class="action" id="btn-svg">SVG</button>
-            <button class="action" id="btn-png">PNG</button>
+            <button class="action" id="btn-svg">Exporter SVG</button>
+            <button class="action" id="btn-png">Exporter PNG</button>
           </div>
           <button class="action ghost" id="btn-reset">Tout remettre</button>
         </section>
